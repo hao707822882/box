@@ -1,0 +1,926 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="author" content="Tencent-TGideas">
+    <meta name="Copyright" content="Tencent">
+    <title>历史战绩</title>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/common/common.css?t=20160704153642"/>
+    <link rel="stylesheet"
+          href="http://cdn.tgp.qq.com/pallas/css/profile/pls.overview.css?201410291505&t=20160405112829"/>
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/common/filter.css?t=20160524181229"/>
+    <![endif]-->
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/popup/popup.css?t=20140821"/>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/common/mobile_tgp.css?t=201605270000001">
+    <script type="text/javascript" src="http://cdn.tgp.qq.com/lib/jq/jquery-1.7.2.min.js?t=20160513160230"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script src="http://cdn.tgp.qq.com/pallas/js/profile/pls.history.20140924.js?t=20160704153642"></script>
+    <script src="http://cdn.tgp.qq.com/pallas/conf/LOLGameArea.js?t=20160513160230"></script>
+    <script src="http://cdn.tgp.qq.com/pallas/conf/LOLChampion.js?t=20160520102736"></script>
+    <script src="http://cdn.tgp.qq.com/pallas/conf/LOLWhiteList.js?t=20151204"></script>
+</head>
+
+<body class="history-page">
+<div class="wrapper">
+    <div class="top-bar">
+        <p class="location" id="navPath"></p>
+    </div>
+
+    <!-- gamer-info -->
+    <div class="gamer-info2 clearfix" id="userInfoArea">
+
+        <div class="info-detail">
+            <p class="name"><strong></strong></p>
+
+            <p class="popularity"></p>
+        </div>
+
+        <div class="grade"></div>
+    </div>
+    <!-- gamer-info end -->
+
+    <div class="ranks-tabs ranks-tabs3">
+        <ul id="tabList">
+            <li><a href="#h" hidefocus>战绩总览</a><b class="opacity-bg"></b></li>
+            <li><a href="#h" hidefocus>历史战绩</a><b class="opacity-bg"></b></li>
+            <li><a href="#h" hidefocus>天赋符文</a><b class="opacity-bg"></b></li>
+            <li><a href="#h" hidefocus>我的英雄</a><b class="opacity-bg"></b></li>
+            <li><a href="#h" hidefocus>荣誉截图</a><b class="opacity-bg"></b></li>
+            <li class="last"><a href="#h" hidefocus>我的好友</a><b class="opacity-bg"></b></li>
+        </ul>
+    </div>
+    <script src="http://cdn.tgp.qq.com/pallas/conf/LOLKeywords.js?20141217&t=20160704153643"></script>
+    <script type="text/javascript">
+        !function () {
+            $ns("PLS");
+            PLS.globStatus = {
+                "vAID": 0,
+                "vUIN": 0,
+                "vUKEY": "",
+                "vANAME": "",
+                "vUName": "",
+                "myAID": 0,
+                "myUIN": 0,
+                "myKEY": "",
+                "myANAME": "",
+                "isSelf": false,
+                "isFollow": 0,
+                "refreshTime": 0,											//刷新时间
+                "tierList": PLS.LOLKeywords.tier,
+                "tierlevel": PLS.LOLKeywords.level,
+                "tierTime": PLS.LOLKeywords.tierTime,
+                "gTypeList": PLS.LOLKeywords.type,
+                "search": ""
+            };
+            PLS.profileHead = {
+                "tabList": [
+                    {"name": "战绩总览", "url": "detail.html", "tcss": "OVERVIEW"},
+                    {"name": "历史战绩", "url": "history.shtml", "tcss": "HISTORY"},
+                ],
+                "firstWinTimeId": -1,
+                "firstWinTime": 0,//22*60*60/8*3+5
+                "firstWinTotalTime": 22 * 60 * 60,
+                //获取用户数据
+                "getUserData": function () {
+                    var url = ["http://api.pallas.tgp.qq.com/core/get_user_hot_info?callback=getUserDataCallBack&dtag=profile"];
+                    var gstatus = PLS.globStatus;
+                    if (!window["getUserDataCallBack"]) {
+                        window["getUserDataCallBack"] = PLS.profileHead.showUserData;
+                    }
+                    url.push("area_id=" + gstatus.vAID);
+                    url.push("qquin=" + gstatus.vUIN);
+                    url.push("t=" + $getTimer());
+                    $loadScript(url.join("&"));
+                },
+                //获取用户状态，包括当前用户和查看用户
+                "getUserStatus": function () {
+                    var gstatus = PLS.globStatus, aList = PLS.LOLGameArea;
+                    var userFlag = $getUinFlag(), vuin = $URL.getSearch("vuin"), vaid = $URL.getSearch("vaid"), kw = $URL.getSearch("kw");
+                    var refUrl = $URL.getSearch("refurl"), refNum = $URL.getSearch("refnum");
+                    if (userFlag) {
+                        userFlag = userFlag.split(":");
+                        gstatus.myUIN = userFlag[1];
+                        gstatus.myAID = userFlag[0];
+                        if (gstatus.myAID != "-1") {
+                            gstatus.myANAME = aList[gstatus.myAID]["name"];
+                        }
+                        gstatus.search = (kw && kw != "") ? decodeURIComponent(kw) : "";
+                        if (!vuin || !vaid) {
+                            gstatus.vAID = userFlag[0];
+                            gstatus.vUIN = userFlag[1];
+                        } else {
+                            gstatus.vAID = vaid;
+                            gstatus.vUIN = vuin;
+                        }
+                        gstatus.vANAME = aList[gstatus.vAID]["name"];
+                    }
+                },
+                "saveVList": function () {
+                    var gstatus = PLS.globStatus, vUList = $cookie.get("vlist"), vuin = $URL.getSearch("vuin"), vaid = $URL.getSearch("vaid");
+                    var refUrl = $URL.getSearch("refurl"), refNum = $URL.getSearch("refnum"), tempArr, tempStr;
+                    //查看他人战绩时，保存查看玩家的列表，每次返回时按列表依次返回
+                    if ((gstatus.vUKEY != gstatus.myUIN && gstatus.vUIN != gstatus.myUIN) || (gstatus.vAID != gstatus.myAID)) {
+                        tempStr = vaid + ":" + vuin;
+                        if (!vUList) {
+                            vUList = tempStr;
+                        } else {
+                            tempArr = vUList.split(",");
+                            if (tempArr.length > 0 && tempArr[tempArr.length - 1] != tempStr) {
+                                if (tempArr.length > 5) {
+                                    tempArr = tempArr.slice(tempArr.length - 5);
+                                }
+                                tempArr.push(tempStr);
+                                vUList = tempArr.join(",");
+                            }
+                        }
+                        if (!gstatus["isSelf"]) {
+                            $cookie.set('vlist', vUList, "", "/", "tgp.qq.com");
+                        }
+                        if (refUrl && refNum) {
+                            $cookie.set('refurl', refUrl, "", "/", "tgp.qq.com");
+                            $cookie.set('refnum', refNum, "", "/", "tgp.qq.com");
+                        }
+                    }
+                },
+                //刷新按钮方法
+                "refreshData": function () {
+                    var gstatus = PLS.globStatus,
+                            fTime = gstatus["refreshTime"],
+                            nowTime = $getTimer();
+
+                    //刷新间隔超过0.5s才刷新
+                    if ((nowTime - fTime) > 1000) {
+                        PLS.profileHead.getUserStatus();
+                        window.refreshPage();
+                        PLS.profileHead.getUserData();
+                        gstatus["refreshTime"] = nowTime;
+                        $TCSS.clicked("PROFILE.HEADER.NAVLIST.REFRESH");
+                    }
+                },
+                //渲染用户信息
+                "showUserData": function (data) {
+                    var headerTpl = "<div class='user-img3 ico3-user{#icon#} fl'>{#ugrade#}</div>\
+                                         <div class='info-detail'>\
+                                            <p class='name'>\
+                                                <input id='username' data-selection='1' type='text' readOnly='true' value='{#name#}'/>({#areaName#}){#followFlag#}\
+                                            </p>\
+                                            <div id='firstWinIcon' class='countdown-icon countdown-icon1'>\
+                                                <p id='firstWinIconTxt' class='countdown-tips' style='display: none;'>每日首胜金币可用</p>\
+                                            </div>\
+                                            <p class='popularity'>\
+                                                <a href='{#followUrl#}' hidefocus id='followURLBtn'>关注：\
+                                                    <span class='num'>{#fellow_num#}</span>\
+                                                </a>\
+                                                <a href='{#fansUrl#}' hidefocus id='fansURLBtn'>粉丝：\
+                                                    <span class='num'>{#fans_num#}</span>\
+                                                </a>\
+                                                <span class='add-text'>赞：\
+                                                    <span class='num'>{#praise_num#}</span>\
+                                                </span>{#discreditHtml#}\
+                                            </p>\
+                                         </div>{#b1bBtn#}{#tierFlag#}\
+                                     </div>";
+                    var userInfoNode = $id("userInfoArea"), navPath = $id("navPath"), gstatus = PLS.globStatus, aList = PLS.LOLGameArea;
+                    var ps, areaName, userInfo, tempStr, uItem, followBtn, followURLBtn, fansURLBtn, isHasFirstWinTime;
+                    if (data && data["retCode"] == 0) {
+                        ps = "?vuin=" + gstatus["vUIN"] + "&vaid=" + gstatus["vAID"];
+                        userInfo = data["data"];
+                        if (userInfo["praise_num"] == null || userInfo["praise_num"] == undefined) {
+                            userInfo["praise_num"] = "0";
+                        }
+                        if (userInfo["discredit_num"] == null || userInfo["discredit_num"] == undefined) {
+                            userInfo["discredit_num"] = "0";
+                        }
+                        if (userInfo["first_win_countdown"] != undefined && userInfo["first_win_countdown"] != null) {
+                            isHasFirstWinTime = true;
+                            PLS.profileHead.firstWinTime = userInfo["first_win_countdown"] * 1;
+                            PLS.profileHead.firstWinTime = Math.min(PLS.profileHead.firstWinTime, PLS.profileHead.firstWinTotalTime);
+                        } else {
+                            isHasFirstWinTime = false;
+                        }
+
+                        gstatus["vUName"] = userInfo["name"];
+                        gstatus["vUKEY"] = userInfo["qquin"];
+                        gstatus["myKEY"] = data["ukey"];
+//							if (userInfo["name"].length > 12){
+//								userInfo["name"] = userInfo["name"].substr(0,12) + "…";
+//							}
+                        userInfo["areaName"] = aList[userInfo["area_id"]]["name"];
+                        userInfo["followUrl"] = "myfriend.shtml" + ps + "&tab_type=1";
+                        userInfo["fansUrl"] = "myfriend.shtml" + ps + "&tab_type=2";
+                        userInfo["ugrade"] = "<b class='grade-num'>" + userInfo["level"] + "</b>";
+                        //userInfo["power_value"] = (userInfo["power_value"] == 0)?"--":userInfo["power_value"];
+                        userInfo["praise_num"] = userInfo["praise_num"];
+
+                        if ((gstatus["myUIN"] == gstatus["vUIN"] || gstatus["myKEY"] == gstatus["vUKEY"]) && gstatus["vAID"] == gstatus["myAID"]) {
+                            userInfo["followFlag"] = "";
+                            userInfo["discreditHtml"] = "<span class='add-text'>拉黑：<span class='num'>" + userInfo["discredit_num"] + "</span></span>";
+                            userInfo["b1bBtn"] = "";
+                            gstatus["isSelf"] = true;
+                        } else {
+                            userFlag = $getUinFlag();
+                            uItem = gstatus["vAID"] + ":" + gstatus["vUIN"];
+                            //无角色无大区不显示比一比
+                            if (userFlag) {
+                                userFlag = userFlag.split(":");
+                                if (userFlag[0] > 0) {
+                                    userInfo["b1bBtn"] = "";
+                                } else {
+                                    userInfo["b1bBtn"] = "";
+                                }
+                            } else {
+                                userInfo["b1bBtn"] = "";
+                            }
+                            userInfo["followFlag"] = "<span class='attention' fuin='" + uItem + "' href='#h' id='followBtn' hidefocus></span>";
+                            userInfo["discreditHtml"] = "";
+                            gstatus["isSelf"] = false;
+                        }
+
+                        //TODO
+                        //userInfo["tier"] = 0;
+                        if (userInfo["tier"] != 255 && gstatus.tierList[userInfo["tier"]]) {
+                            var rankLastBattle = userInfo["rank_last_battle"];
+                            //TODO
+                            //rankLastBattle = 10*86400 - 86400 - 86400;
+
+                            var rankLastBattleTipHtml = '';
+
+                            //必须是铂金（包括铂金）以上的才会提示
+                            if (typeof rankLastBattle != 'undefined' && gstatus["isSelf"] && (userInfo["tier"] == 0 || userInfo["tier"] == 1 || userInfo["tier"] == 2 || userInfo["tier"] == 6)) {
+                                var ranklastbattleCookie = $cookie.get('ranklastbattle');
+                                if (ranklastbattleCookie) {
+                                    var ranklastbattleCookieAry = ranklastbattleCookie.split('_');
+                                    if (ranklastbattleCookie[1] == gstatus["myAID"] && ranklastbattleCookie[2] == gstatus["myUIN"]) {
+                                        var curTime = Math.floor($getTimer() / 1000 / 86400);
+                                        if (curTime != ranklastbattleCookie[0]) {
+                                            createRankLastBattleTipHtml();
+                                        }
+                                    }
+                                } else {
+                                    createRankLastBattleTipHtml();
+                                }
+                            }
+
+                            function createRankLastBattleTipHtml() {
+                                var tierTime = gstatus.tierTime[userInfo["tier"]];
+                                if (rankLastBattle > tierTime) {
+                                    //掉段
+                                    rankLastBattleTipHtml = '<div data-el="ranklastbattle" class="offline-tips-area">' +
+                                            '<a data-ranklastbattle="closeBtn" class="close-tips-btn" href="javascript:;" hidefocus=""></a>' +
+                                            '<p>您已进入排位休眠期，导致胜点减少或掉段。</p>' +
+                                            '</div>';
+                                } else if (rankLastBattle > (tierTime - 3 * 86400)) {
+                                    //只剩3天内就掉段
+                                    var day = Math.ceil((rankLastBattle - (tierTime - 3 * 86400)) / 86400);
+                                    var dayDict = {
+                                        1: "一",
+                                        2: "二",
+                                        3: "三"
+                                    };
+                                    var dayName = dayDict[day + ''];
+                                    rankLastBattleTipHtml = '<div data-el="ranklastbattle" class="offline-tips-area">' +
+                                            '<a data-ranklastbattle="closeBtn" class="close-tips-btn" href="javascript:;" hidefocus=""></a>' +
+                                            '<p>还有' + dayName + '天进入排位休眠期，会导致胜点减少或掉段。</p>' +
+                                            '<a data-ranklastbattle="promptBtn" class="not-tips" href="javascript:;" hidefocus="">不再提示</a>' +
+                                            '</div>';
+                                } else {
+                                    //超过3天，不需要提醒
+                                }
+                            }
+
+                            if (rankLastBattleTipHtml != "") {
+                                $('body').on('click', '[data-ranklastbattle="closeBtn"]', function () {
+                                    $('[data-el="ranklastbattle"]').hide();
+                                }).on('click', '[data-ranklastbattle="promptBtn"]', function () {
+                                    var curTime = Math.floor($getTimer() / 1000 / 86400);
+                                    var utcStr = new Date($getTimer() + (365 * 24 * 60 * 60 * 1000)).toUTCString();
+                                    $cookie.set('ranklastbattle', curTime + "_" + gstatus["myAID"] + "_" + gstatus["myUIN"], utcStr, "/", "tgp.qq.com");
+                                    $('[data-el="ranklastbattle"]').hide();
+                                });
+                            }
+
+                            tempStr = gstatus.tierList[userInfo["tier"]];
+                            if (userInfo["tier"] > 0 && userInfo["tier"] < 6) {
+                                tempStr += " " + gstatus.tierlevel[userInfo["queue"]];
+                            }
+                            userInfo["tierFlag"] = "<div class='grade'><img src='http://cdn.tgp.qq.com/pallas/images/pallas/grade" + userInfo["tier"] + ".png' width='60' height='46' title='" + tempStr + "' /><p>" + tempStr + "</p>" + rankLastBattleTipHtml + "</div>";
+                        } else {
+                            userInfo["tierFlag"] = "";
+                        }
+
+                        PLS.profileHead.saveVList();
+                    } else {
+                        userInfo = {
+                            "icon_id": 0,
+                            "name": "无角色",
+                            "areaName": gstatus.vANAME,
+                            "followFlag": "",
+                            "fellow_num": 0,
+                            "fans_num": 0,
+                            "followUrl": "#h",
+                            "ugrade": "",
+                            "fansUrl": "#h",
+                            "tierFlag": "",
+                            "praise_num": "--",
+                            "b1bBtn": "",
+                            "discreditHtml": "<span class='add-text'>拉黑：<span class='num'>--</span></span>"
+                        };
+                        gstatus["isSelf"] = true;
+                    }
+
+                    userInfoNode.innerHTML = $mkHtmlTmp(userInfo, headerTpl);
+                    //显示S5竞猜入口
+                    //PLS.profileHead.openS5award();
+                    var input = $id("username");
+                    var input_size = input.value.replace(/[^\u0000-\u00ff]/g, "aa").length;
+                    //input.size = input_size;
+                    input.style.width = input_size * 10 + "px";
+
+                    followBtn = $id("followBtn"), fansURLBtn = $id("fansURLBtn"), followURLBtn = $id("followURLBtn");
+                    if (fansURLBtn) {
+                        fansURLBtn.onclick = function () {
+                            $TCSS.clicked("PROFILE.HEADER.NAVLIST.FANS");
+                        }
+                    }
+                    if (followURLBtn) {
+                        followURLBtn.onclick = function () {
+                            $TCSS.clicked("PROFILE.HEADER.NAVLIST.ATTENTION");
+                        }
+                    }
+                    if (followBtn) {
+                        followBtn.style.cursor = "pointer";
+                        followBtn.onclick = function () {
+                            var fuin = this.getAttribute("fuin");
+                            if (fuin) {
+                                PLS.profileHead.setFollow(fuin, PLS.profileHead.showFollow);
+                            }
+                        };
+                    }
+                    if (uItem) {
+                        PLS.profileHead.chkFollow(uItem, PLS.profileHead.showFollow);
+                    }
+                    //渲染路劲导航
+                    if (navPath) {
+                        PLS.profileHead.showPathNav();
+                    }
+                    //比一比渲染
+                    PLS.profileHead.compareEXP();
+
+                    //显示首胜倒计时
+                    var firstWinIcon = $("#firstWinIcon");
+                    if (data && data["retCode"] * 1 === 0 && gstatus["isSelf"] == true && isHasFirstWinTime == true) {
+                        firstWinIcon.show();
+                    } else {
+                        firstWinIcon.hide();
+                    }
+                    firstWinIcon.mouseover(function () {
+                        $(this).children(".countdown-tips").show();
+                    });
+                    firstWinIcon.mouseleave(function () {
+                        $(this).children(".countdown-tips").hide();
+                    });
+
+
+                    PLS.profileHead.firstWinInterval();
+                },
+                "compareEXP": function () {
+                    var cBtn = $id("compareBtn"), gstatus = PLS.globStatus;
+                    if (cBtn && !gstatus["isSelf"]) {
+                        if (cBtn) {
+                            /*$addEvent(tempNode,"mouseover",function(){
+                             $id("compareCover").style.display = "block";
+                             });
+                             $addEvent(tempNode,"mouseout",function(){
+                             $id("compareCover").style.display = "none";
+                             });
+                             $addEvent($id("compareBG"),"click",function(){
+                             PLS.b1b.main();
+                             });*/
+                            $addEvent(cBtn, "click", function () {
+                                PLS.b1b.main();
+                                $TCSS.clicked("PROFILE.HEADER.NAVLIST.B1BFLOAT");
+                            });
+                        }
+                    }
+                },
+                //渲染页面路径导航
+                "showPathNav": function () {
+                    var gstatus = PLS.globStatus, navPath = $id("navPath"), refreshBtn = $id("refreshBtn"), backBtn = $id("backBtn");
+                    var tempStr, refUrl, refNum, tabList = $id("tabList"), tempNodes;
+
+                    if (gstatus["isSelf"]) {
+                        tempNodes = tabList.getElementsByTagName("a");
+                        for (var i = 0; i < tempNodes.length; i++) {
+                            tempStr = tempNodes[i].innerHTML;
+                            if (tempStr.indexOf("TA ") > -1) {
+                                tempNodes[i].innerHTML = tempStr.replace("TA ", "我");
+                            }
+                        }
+                        tempStr = "我的战绩";
+                    } else {
+
+                        tempStr = ["<a href='search.html'>战况查询</a>"];
+
+                        tempStr.push(gstatus["vUName"] + " (" + gstatus["vANAME"] + ")");
+                        tempStr = tempStr.join(" &gt; ");
+                    }
+                    navPath.innerHTML = tempStr;
+                },
+                "backRefUserView": function () {
+                    var curUrl = location.href, refUrl = $cookie.get("refurl"), refNum = $cookie.get("refnum"), userFlag = $getUinFlag();
+                    var gstatus = PLS.globStatus, curNum, vUList = $cookie.get("vlist"), kw = $cookie.get("kw"), tempStr, tempArr, backUrl;
+                    var newVer = $checkFrame();
+                    //判断
+                    if ($checkFrame()) {
+                        parent.PLS.web.goBack();
+                    } else {
+                        curNum = 2;
+                        if (vUList) {
+                            tempArr = vUList.split(",");
+                            //如果浏览过的有浏览过其他玩家，则获浏览的前一个玩家URL
+                            if (tempArr.length > 1) {
+                                tempStr = tempArr.pop();
+                                tempStr = tempArr.pop();
+                                tempStr = tempStr.split(":");
+                                if (tempStr.length == 2 && !isNaN(tempStr[0])) {
+                                    vUList = tempArr.join(",");
+                                    $cookie.set("vlist", vUList, "", "/", "tgp.qq.com");
+                                    tempStr = "?vuin=" + tempStr[1] + "&vaid=" + tempStr[0];
+                                    backUrl = PLS.profileHead.tabList[0]["url"].split("?");
+                                    backUrl = backUrl[0] + tempStr;
+                                }
+                            }
+                        }
+                        $TCSS.clicked("PROFILE.HEADER.NAVLIST.BACK");
+                        if (backUrl) {
+                            window.location.href = backUrl;
+                        } else {
+                            if (refUrl && refNum) {
+                                //如果是返回我的战绩，不带查看玩家参数
+                                if (userFlag && refNum == "1") {
+                                    tempStr = userFlag.split(":");
+                                    tempStr = tempStr[0];
+                                    tempArr = $URL.getSearches(refUrl);
+                                    if (tempArr["vaid"] && tempArr["vaid"] != tempStr) {
+                                        refUrl = refUrl.split("#");
+                                        refUrl = refUrl[0];
+                                        refUrl = refUrl.replace(/&vaid\=[^&#]*/gi, "&vaid=" + tempStr);
+                                    }
+                                }
+                                tempObj = {
+                                    'gotoUrl': refUrl,
+                                    'gotoParam': {'menuid': refNum},
+                                    'backUrl': curUrl,
+                                    'backParam': {'menuid': curNum}
+                                };
+                                $cookie.del("vlist", "tgp.qq.com");
+                                $jumpWebView(tempObj);
+                            } else {
+                                backUrl = "http://api.tgp.qq.com/search/v1405/index.shtml";
+                                if (kw && kw != "") {
+                                    backUrl += "?kw=" + kw;
+                                }
+                                window.location.href = backUrl;
+                            }
+                        }
+                    }
+                },
+                //渲染TAB切换
+                "showNavList": function () {
+                    var navListTpl = "<li class='{#curClass#}'><a href='{#url#}' hidefocus tcss='{#tcss#}'>{#name#}{#fTips#}</a><b class='opacity-bg' tcss='{#tcss#}'></b></li>";
+                    var curURL = location.pathname, curNav, tempNodes, tempStr, htmlCode = [], isSelf = false;
+                    var gstatus = PLS.globStatus, navList = this["tabList"], tabList = $id("tabList");
+                    curURL = curURL.split("/");
+                    curURL = curURL[(curURL.length - 1)];
+                    curNav = curURL.split(".")[0].toUpperCase();
+                    //荣誉截图同归于荣誉目录下
+                    if (curNav == 'MYSNAPS') {
+                        curNav = 'HONOR';
+                    }
+                    isSelf = ((gstatus["myUIN"] == gstatus["vUIN"] || gstatus["myUIN"] == gstatus["vUKEY"]) && gstatus["vAID"] == gstatus["myAID"]) ? true : false;
+                    tempStr = "?vuin=" + gstatus["vUIN"] + "&vaid=" + gstatus["vAID"];
+                    if (gstatus["search"] != "") {
+                        tempStr += "&kw=" + encodeURIComponent(gstatus["search"]);
+                    }
+                    for (var i = 0; i < navList.length; i++) {
+                        if (isSelf) {
+                            if (i === 3) {
+                                continue;
+                            }
+                        } else {
+                            navList[i]["name"] = navList[i]["name"].replace("我", "TA ");
+                        }
+
+                        if (curNav == navList[i]["tcss"]) {
+                            navList[i]["curClass"] = (navList[i]["tcss"] == "MYFRIEND") ? "last on" : "on";
+                        } else {
+                            navList[i]["curClass"] = (navList[i]["tcss"] == "MYFRIEND") ? "last" : "";
+                        }
+                        //角标逻辑
+                        if (navList[i]["tcss"] == "HONOR") {
+                            navList[i]["fTips"] = "<b class='new-icon'></b>";
+                        } else {
+                            navList[i]["fTips"] = "";
+                        }
+                        navList[i]["url"] += tempStr;
+                        htmlCode.push($mkHtmlTmp(navList[i], navListTpl));
+                    }
+                    tabList.innerHTML = htmlCode.join("");
+                    if (isSelf) {
+                        $(".ranks-tabs").removeClass("ranks-tabs3").addClass("ranks-tabs2");
+                    }
+                    tempNodes = tabList.getElementsByTagName("a");
+                    for (var i = 0; i < tempNodes.length; i++) {
+                        tempNodes[i].onclick = function () {
+                            var tcss = this.getAttribute("tcss");
+                            if (tcss) {
+                                $TCSS.clicked("PROFILE.HEADER.NAVLIST." + tcss);
+                            }
+                        }
+                    }
+                },
+                "chkFollow": function (uList, func) {
+                    var chkUrl = ["http://api.pallas.tgp.qq.com/core/get_user_relation?callback=chkFellowCallback&dtag=profile"];
+                    var uFlag = $getUinFlag(), uin, aId, gstatus = PLS.globStatus;
+                    if (!window["chkFellowCallback"] && func) {
+                        //注册SNS关系链渲染回调
+                        window["chkFellowCallback"] = func;
+                    }
+                    if (uList != "") {
+                        //检查是否已从客户端获取到登录态，如无则再次尝试从cookie中获取
+                        if (!uFlag) {
+                            uin = $cookie.get("puin");
+                            aId = $cookie.get("aid");
+                            if (uin) {
+                                uFlag = aId + ":" + uin;
+                            } else {
+                                return;
+                            }
+                        }
+                        chkUrl.push("uin=" + uFlag);
+                        chkUrl.push("fuin=" + uList);
+                        chkUrl.push("t=" + (new Date).getTime());
+                        $loadScript(chkUrl.join("&"));
+                    }
+                },
+                "showFollow": function (data) {
+                    var followBtn = $id("followBtn"), tempStr, fList;
+                    if (followBtn && data && data["retCode"] == 0) {
+                        fList = data["data"];
+                        tempStr = followBtn.getAttribute("fuin");
+                        if (tempStr) {
+                            if (fList[tempStr] == "1") {
+                                followBtn.innerHTML = "取消关注";
+                                followBtn.className = "un-follow";
+                                PLS.globStatus.isFollow = 2;
+                            } else {
+                                followBtn.innerHTML = "关注";
+                                followBtn.className = "attention";
+                                PLS.globStatus.isFollow = 1;
+                            }
+                        }
+                    } else {
+                    }
+                },
+                "setFollow": function (str, func) {
+                    var setUrl = ["http://api.pallas.tgp.qq.com/core/set_fellow?callback=setFellowCallback&dtag=profile"];
+                    var uFlag = $getUinFlag(), uin, aId, tcss, isFollow = PLS.globStatus.isFollow;
+                    if (!window["setFellowCallback"] && func) {
+                        window["setFellowCallback"] = func;
+                    }
+                    if (str !== "") {
+                        //检查是否已从客户端获取到登录态，如无则再次尝试从cookie中获取
+                        if (!uFlag) {
+                            uin = $cookie.get("puin");
+                            aId = $cookie.get("aid");
+                            if (uin) {
+                                uFlag = aId + ":" + uin;
+                            } else {
+                                return;
+                            }
+                        }
+                        if (isFollow == 2) {
+                            tcss = "DELFOLLOW";
+                            setUrl.push("action=2");
+                        } else {
+                            tcss = "ADDFELLOW";
+                            setUrl.push("action=1");
+                        }
+                        setUrl.push("uin=" + uFlag);
+                        setUrl.push("fuin=" + str);
+                        setUrl.push("t=" + (new Date).getTime());
+                        $loadScript(setUrl.join("&"));
+                        $TCSS.clicked("PROFILE.HEADER.NAVLIST." + tcss);
+                    }
+                },
+                //打开s5竞猜独立窗体
+                /*"openS5award" : function(){
+                 if(PLS.globStatus.isSelf){
+                 $id("s5awardBtn").style.display = "block";
+                 }
+                 $addEvent($id("s5awardBtn"), "click", function(){
+                 params = {
+                 "title" : encodeURIComponent("2015全球总决赛竞猜狂欢"),
+                 "name" : "s5award",
+                 "width" : 615,
+                 "height" : 639,
+                 "frame" : 0,
+                 "url" : "http://api.tgp.qq.com/common/s5_index.html",
+                 "login" : 1
+                 };
+                 try{
+                 window.external.pallasCallCpp("create_dynamic_window", JSON.stringify(params));
+                 }catch(e){}
+                 })
+                 },*/
+                //初始化头部方法
+                "initHeader": function () {
+                    this.getUserStatus();
+                    this.showNavList();
+                    this.getUserData();
+                    $addTextSelection();
+                }
+            };
+            PLS.profileHead.initHeader();
+        }();
+
+        PLS.profileHead.firstWinInterval = function () {
+            if (PLS.profileHead.firstWinTimeId != null && PLS.profileHead.firstWinTimeId * 1 !== -1) {
+                clearTimeout(PLS.profileHead.firstWinTimeId);
+            }
+            PLS.profileHead.firstWinTime = PLS.profileHead.firstWinTime - 1;
+            var firstWinTime = PLS.profileHead.firstWinTime;
+            var firstWinTotalTime = PLS.profileHead.firstWinTotalTime;
+            if (firstWinTime <= 0) {
+                $("#firstWinIconTxt").html("首胜奖励可用");
+                $("#firstWinIcon").removeClass().addClass("countdown-icon countdown-icon8");
+                return;
+            }
+            PLS.profileHead.firstWinTimeId = setTimeout(arguments.callee, 1 * 1000);
+
+            var perc = (firstWinTotalTime - firstWinTime) / firstWinTotalTime;
+
+            var idx = Math.ceil(perc * 8) - 1;
+            //log("perc:" + perc + ",idx:" + idx);
+            var h = Math.floor(firstWinTime / (60 * 60));
+            var m = Math.floor(firstWinTime % (60 * 60) / 60);
+            if (m < 10) {
+                m = '0' + m;
+            }
+            var s = Math.ceil(firstWinTime % (60 * 60) % 60);
+            if (s < 10) {
+                s = '0' + s;
+            }
+
+            $("#firstWinIconTxt").html("首胜奖励倒计时  " + h + ":" + m + ":" + s);
+            $("#firstWinIcon").removeClass().addClass("countdown-icon countdown-icon" + idx);
+        }
+    </script>
+
+    <!-- hero-area -->
+    <div class="hero-area hero-area3" id="gameListArea">
+        <!-- debut-cont -->
+        <div class="debut-cont" id="debutArea">
+            <p class="debut-current"><span tag="total" id="curFilter">全部战绩</span><span class="arrow-icon"></span></p>
+
+            <div class="drop-down" id="debutDrop">
+                <a class="close-btn" href="javascript:;" hidefocus></a>
+
+                <h3 class="first-title">筛选战绩</h3>
+                <a class="result-btn" href="#h" hidefocus data-title="全部战绩" efhid="0" eftype="0"><span data-title="全部战绩"
+                                                                                                       efhid="0"
+                                                                                                       eftype="0">全部战绩</span><b
+                        class="btn-side"></b></a>
+                <a class="result-btn" href="javascript:;" hidefocus data-title="MVP对局" efhid="0" eftype="1001">M V P 对 局<b
+                        class="btn-side"></b></a>
+
+                <h3>按比赛类型</h3>
+                <a class="result-btn qualifying-btn fl" href="#h" hidefocus data-title="排位赛" efhid="0" eftype="4"><span>排位赛</span><b
+                        class="btn-side"></b></a>
+                <a class="result-btn matching-btn fl" href="#h" hidefocus data-title="匹配赛" efhid="0" eftype="1"><span>匹配赛</span><b
+                        class="btn-side"></b></a>
+                <a class="result-btn smash-btn fl" href="#h" hidefocus data-title="大乱斗" efhid="0"
+                   eftype="6"><span>大乱斗</span><b class="btn-side"></b></a>
+
+                <h3>常用英雄</h3>
+                <ul id="commonHeros" class="common-hero">
+                </ul>
+            </div>
+        </div>
+        <!-- debut-cont end -->
+
+        <!-- filter-result -->
+        <div class="filter-result" type="0" hid="0" id="rateInfo">
+            <p class="smart">智能筛选战绩</p>
+
+            <div class="exclamatory-point">
+                <a class="exclamation" tag="filterTips" href="#h"></a>
+
+                <div class="debut-tips" style="display: none;">
+                    <p>可根据常用英雄和比赛类型对最近500场比赛进行筛选</p>
+
+                    <div class="arrow"></div>
+                </div>
+            </div>
+        </div>
+        <!-- filter-result end -->
+
+        <!-- hero-list -->
+        <div class="hero-list" id="listContent">
+            <ul id="gameList"></ul>
+        </div>
+        <!-- hero-list end -->
+
+        <!-- no hero area -->
+        <div class="no-heros-area" id="noContent" style="display:none;">
+            <p>最近没有相关战绩<br>请重新筛选</p>
+        </div>
+        <!-- no hero area end -->
+
+        <div id="pageBar">
+            <div class="page-turn"><a class="prev" tag="prev" href="#h" hidefocus></a><input type="text"/><span
+                    class="page-num"></span><a class="go-btn" href="#h" hidefocus>GO</a><a class="next" tag="next"
+                                                                                           href="#h" hidefocus></a>
+            </div>
+            <!-- 只在主人态显示 -->
+
+        </div>
+        <div id="mobileArea" class="slide-tips-box" style="z-index: 0; display: none;">
+            <div class="slide-btn">
+                <p el="useNumArea" class="score">--<span class="small">局</span> --<span class="small">胜</span></p>
+            </div>
+            <div class="slide-tips-cont" style="display: none;">
+                <h3 el="honorTitle" class="slide-title title-get">今日已获得</h3>
+
+                <div el="honorArea" class="honor-box clearfix">
+                    <ul>
+                    </ul>
+                </div>
+                <h3 el="kdaArea" class="slide-title title-kda">今日KDA</h3>
+
+                <div class="code-box">
+                    <div id="qrcode" style="display: none;" class="code-img">
+                    </div>
+                    <img id="qrcodeIcon" class="code-img"
+                         src="http://cdn.tgp.qq.com/pallas/images/pallas/mobile/qrbattlelist.png" alt=""
+                         width="120" height="120"/>
+                </div>
+                <p class="scan-text">扫我领取完整成绩单</p>
+            </div>
+        </div>
+    </div>
+    <!-- hero-area -->
+
+    <!-- history-area -->
+    <div class="history-area">
+        <div class="history-intro">
+            <ul id="overViewList">
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" hidefocus>
+                    </a>
+                </li>
+            </ul>
+            <div id="banBtn" class="forbid-area" style="visibility:hidden">
+                <a class="forbid-text" href="javascript:;" hidefocus="">禁用<br>英雄</a>
+
+                <div class="forbid-list">
+                    <ul id="banList">
+                        <li><span id="banListItem1" class="hero-img icon-none" href="#" hidefocus=""></span></li>
+                        <li><span id="banListItem3" class="hero-img icon-none" href="#" hidefocus=""></span></li>
+                        <li><span id="banListItem5" class="hero-img icon-none" href="#" hidefocus=""></span></li>
+                        <li><span id="banListItem2" class="hero-img icon-none" href="#" hidefocus=""></span></li>
+                        <li><span id="banListItem4" class="hero-img icon-none" href="#" hidefocus=""></span></li>
+                        <li><span id="banListItem6" class="hero-img icon-none" href="#" hidefocus=""></span></li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-img" id="honorImg">
+            <img class="default-img" src="http://cdn.tgp.qq.com/pallas/images/pallas/default_img2.jpg" width="66"
+                 height="38" alt=""/>
+        </div>
+        <div class="analysis-area" id="battleInfo" style="display:none">
+            <a href="#h" hidefocus>
+                <i class="analysis-icon"></i>
+
+                <p class="num" id="honorNum"></p>
+                <h4>对局分析</h4>
+            </a>
+        </div>
+
+        <!-- history-cont -->
+        <div class="history-title" id="playListHeader">
+            <p><span class="cubes"></span>胜利队伍</p>
+
+            <p><span class="cubes cubes2"></span>战败队伍</p>
+
+            <p class="appraise">评价</p>
+
+            <p class="money">金钱</p>
+
+            <p class="kill">杀/死/助</p>
+
+            <p class="equip">出装</p>
+        </div>
+        <div class="history-cont" id="gameDetailList">
+            <ul>
+                <li>
+                </li>
+                <li>
+                </li>
+                <li>
+                </li>
+                <li>
+                </li>
+                <li>
+                </li>
+            </ul>
+            <ul>
+                <li class="fail-item">
+                </li>
+                <li class="fail-item">
+                </li>
+                <li class="fail-item">
+                </li>
+                <li class="fail-item">
+                </li>
+                <li class="fail-item">
+                </li>
+            </ul>
+        </div>
+        <!-- history-cont end -->
+    </div>
+    <!-- history-area end -->
+
+    <div class="clear"></div>
+</div>
+<script type="text/x-template" id="gameItemTpl">
+    <li>
+        <a href="#h" hidefocus data-hid="{#hid#}" data-gameid="{#gameId#}">
+            {#extFlagHtml#}
+            <span class="hero-img icon-{#hid#}" efhid="{#hid#}" eftype="0">{#mvp#}</span>
+			<span class="hero-detail">
+				<span class="hero-title">{#desc#}<span class="{#typeClass#}">（{#gameType#}）</span></span>
+				<span class="date">{#date#}</span>
+			</span>
+            <b class="arrow"></b>
+
+            <div class="mark-area">
+                <b class="img-icon" style="display:none;"></b>
+                <b class="marking friend-mark" style="display:none;"></b>
+                <b class="defeat-mark" style="{#defeat#}"></b>
+            </div>
+        </a>
+    </li>
+</script>
+<script src="http://cdn.tgp.qq.com/lib/jquery.qrcode2.min.js"></script>
+<script src="http://cdn.tgp.qq.com/lib/svg/raphael-min.js"></script>
+<script src="http://cdn.tgp.qq.com/lib/svg/morris.min.2014060.js?20140709"></script>complcompl
+<script src="http://cdn.tgp.qq.com/pallas/js/profile/pls.b1b.20140623.js?t=20160513160231"></script>
+<script>
+    $(".forbid-area").mouseover(function () {
+        $(this).closest(".history-intro").css({zIndex: "2"});
+        $(this).addClass("forbid-hover");
+    });
+    $(".forbid-area").mouseleave(function () {
+        $(this).closest(".history-intro").css({zIndex: "0"});
+        $(this).removeClass("forbid-hover");
+    });
+    PLS.record.main();
+    //点击流上报
+    $TCSS.visited({statIframe: true});
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html ng-app="teach">
+<head>
+    <title>Hello WebSocket</title>
+    <script src="http://chat.iboom.tv/socket.js"></script>
+    <script src="http://chat.iboom.tv/stomp.js"></script>
+    <script src="http://chat.iboom.tv/jquery.js"></script>
+    <script src="http://chat.iboom.tv/angular.js"></script>
+    <script src="http://chat.iboom.tv/SpeakerJs.js"></script>
+    <script src="boomUtil.js"></script>
+    <style>
+        .f_left {
+            float: left;
+        }
+
+        .f_right {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="show">
+    <input type="text" ng-model="data"/>
+    <button id="connect" ng-click="connect()">connect</button>
+    <button id="sendName" ng-click="say()">Send</button>
+    <ul>
+        <li ng-repeat="chat in chats">
+            {{chat.speaker.name}}:{{chat.content}}
+        </li>
+    </ul>
+</div>
+</body>
+<script>
+    var myAppModule = angular.module('teach', [])
+    myAppModule.provider("webSocketService", function () {
+        this.stompClient = null;
+        //连接webSocket服务
+        this.setStompEndPoint = function (endPoint) {
+            this.endPoint = endPoint;
+        }
+
+
+        this.$get = function () {
+            var self = this;
+            var service = {
+                listen: function (url, handler, scope) {
+
+                    if (!self.stompClient) {
+                        var socket = new SockJS("http://chat.iboom.tv/" + self.endPoint);
+                        self.stompClient = Stomp.over(socket);
+                    }
+
+                    self.stompClient.connect({}, function (frame) {
+                        console.log(frame)
+                        self.stompClient.subscribe(url, function (greeting) {
+                            console.log(greeting)
+                            if (scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
+                                scope.$apply(function () {
+                                    console.log(greeting.body)
+                                    handler ? handler(JSON.parse(greeting.body), scope) : null;
+                                });
+                            }
+                        });
+                    });
+                    return this;
+                },
+                say: function (url, data, handler, scope) {
+                    self.stompClient.send(url, {}, JSON.stringify(data));
+                    if (scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
+                        scope.$apply(function () {
+                            handler ? handler(data, scope) : null;
+                        });
+                    }
+                }
+
+            };
+            return service;
+        }
+    })
+
+    myAppModule.config(function (webSocketServiceProvider) {
+        webSocketServiceProvider.setStompEndPoint("hello")
+    })
+
+    myAppModule.controller("show", ["webSocketService", "$http", "$scope", function (webSocketService, $http, $scope) {
+
+        $scope.chats = [];
+        var speaker = {};
+        var group = "default"
+        $scope.connect = function () {
+            $http.jsonp("http://school.iboom.tv/school/auth/userStatue.do?callback=JSON_CALLBACK").success(function (data) {
+                var auth = data.auth;
+                speaker = boomWebSocket.createSpeaker(auth.summoner, auth.studentNum, auth.headImage);
+                group = auth.areaCode ? auth.areaCode : "default";
+                webSocketService.listen("/topic/greetings/" + group, function (data, $scope) {
+                    $scope.chats.push(data);
+                }, $scope)
+            }).error(function () {
+
+            })
+        }
+
+        $scope.say = function () {
+            var data = boomWebSocket.createGroupMessage($scope.data, group, speaker)
+            webSocketService.say("/app/hello", data, null, $scope);
+        }
+    }])
+
+</script>
+</html>

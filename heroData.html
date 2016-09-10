@@ -1,0 +1,372 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="Tencent-TGideas">
+    <meta name="Copyright" content="Tencent">
+    <title>英雄数据榜</title>
+    <script id="speedRptInfoScript" loaded="0">
+        var speedTimePoint = [[(new Date()), 7718, 157, 7]];
+    </script>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/common/common.css?t=20160801152852"/>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/rank/ranking_v2.css?t=20160115111927"/>
+    <script>speedTimePoint.push(new Date());//1 样式加载</script>
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/common/filter.css?t=20160524181229"/>
+    <![endif]-->
+    <script type="text/javascript" src="common.js?t=20160513160231"></script>
+</head>
+
+<body class="hero-rank">
+<div class="wrapper">
+    <div class="top-bar">
+        <p class="location">排行榜</p>
+
+        <p class="location2"><a class="refresh" href="#" id="refreshBtn" hidefocus>刷新</a></p>
+    </div>
+
+    <div class="ranks-tabs">
+        <ul id="navList">
+            <li class="hero-rank"><b class="new-tab-icon" style="z-index: 10; right:0px"></b><a
+                    href="http://api.tgp.qq.com/rank/v1404/heroData.shtml" data-tcss-tag="HERO" hidefocus>英雄数据榜</a><b
+                    class="opacity-bg"></b></li>
+            <li class="user-rank"><a href="http://api.tgp.qq.com/rank/v1404/userRank.shtml" data-tcss-tag="USER"
+                                     hidefocus>国服玩家榜</a><b class="opacity-bg"></b></li>
+        </ul>
+    </div>
+    <script>
+        !function () {
+            //TCSS click
+            var navNode = $id("navList"), tabs;
+            if (navNode) {
+                tabs = navNode.getElementsByTagName("a");
+                for (var i = 0, l = tabs.length; i < l; i++) {
+                    tabs[i].onclick = function () {
+                        $TCSS.clicked("RANK.HEADER.TAB." + this.getAttribute("data-tcss-tag"));
+                        return true;
+                    }
+                }
+            }
+        }();
+    </script>
+
+    <a href="javascript:;" class="switch-btn" id="changeMode" data-currmode="table" hidefocus>查看完整数据</a>
+
+    <!-- rank-content start -->
+    <div class="rank-content" id="heroSimpleView">
+        <ul class="ui-tabs" id="classSwitch">
+            <li class="cur"><a href="javascript:;" type="compreRank" hidefocus>综合排名</a></li>
+            <li><a href="javascript:;" type="rankTop" hidefocus>仅看排位</a></li>
+            <li><a href="javascript:;" type="kingTop" hidefocus>超凡王者</a></li>
+        </ul>
+        <p class="tabs-intro">统计召唤师峡谷（匹配+排位）</p>
+        <!-- ui-tabs-cont start -->
+        <div class="ui-tabs-cont">
+            <div class="opacity-bg"></div>
+            <ul class="table table-title" id="rankTableTitle">
+                <li>
+                    <div class="table-cell1">打法</div>
+                    <div class="table-cell2">胜率</div>
+                    <div class="table-cell3">登场</div>
+                    <div class="table-cell4">最快提升</div>
+                </li>
+            </ul>
+
+            <ul class="table" id="compreHeroRank">
+
+            </ul>
+
+            <div class="rank-intro">
+                <p>本数据更新于<span id="update_date">2015-12-11</span></p>
+
+                <div class="exclamatory-point">
+                    <a class="exclamation" href="#" hidefocus></a>
+
+                    <div class="debut-tips" style="display: none;">
+                        <p>每天统计召唤师峡谷下匹配和排位比赛，其他类型不包含，每日8点更新。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ui-tabs-cont end -->
+    </div>
+    <!-- rank-content end -->
+    <!-- entire-rank-content start -->
+    <div class="rank-content entire-rank-content" id="heroEntireView">
+        <div class="search-area">
+            <div class="input-box">
+                <input type="text">
+                <label class="value-text">查找英雄名称</label>
+            </div>
+            <a class="search-btn" href="#" hidefocus>搜索</a>
+
+            <div class="search-tips" style="display:none;">
+                <p>该玩家未上榜</p>
+
+                <div class="tips-mask"></div>
+            </div>
+        </div>
+
+        <div class="dropdown-area">
+            <p class="result">所有打法<b class="arrow"><a href="javascript:;" hidefocus></a></b></p>
+
+            <div class="dropdown-list">
+                <ul>
+                    <li><a href="#" data-position="all" hidefocus>所有打法</a></li>
+                    <li><a data-position="up" href="#" hidefocus>上单</a></li>
+                    <li><a href="#" data-position="jungle" hidefocus>打野</a></li>
+                    <li><a href="#" data-position="mid" hidefocus>中单</a></li>
+                    <li><a href="#" data-position="adc" hidefocus>ADC</a></li>
+                    <li><a href="#" data-position="aux" hidefocus>辅助</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ui-tabs-cont start -->
+        <div class="ui-tabs-cont">
+            <div class="opacity-bg"></div>
+
+            <div class="scroll-area">
+                <div class="scroll-cont">
+                    <!-- table-area1 start -->
+                    <div class="table-area1">
+                        <ul class="table table-title" id="heroNameTab">
+                            <li>
+                                <div class="table-cell1">序号</div>
+                                <div class="table-cell2" data-order="title">英雄</div>
+                                <div class="table-cell3" data-order="position">打法</div>
+                            </li>
+                        </ul>
+                        <ul class="table" id="heroNameCont">
+
+                        </ul>
+                    </div>
+                    <!-- table-area1 end -->
+
+                    <!-- table-area2 start -->
+                    <div class="table-area2">
+                        <ul class="title-tabs" id="tableMainTab">
+                            <li class="cur"><a href="javascript:;" data-type="0" hidefocus>数据统计</a></li>
+                            <li><a href="javascript:;" data-type="1" hidefocus>KDA统计</a></li>
+                            <li><a href="javascript:;" data-type="2" hidefocus>能力统计</a></li>
+                        </ul>
+
+                        <div class="title-tabs-cont">
+                            <ul class="colomn5" id="subStat0">
+                                <li data-order="win_ratio">胜率<b class="arrow"></b></li>
+                                <li data-order="use_ratio">登场率<b class="arrow"></b></li>
+                                <li data-order="ban_ratio">Ban选率</li>
+                                <li data-order="play_rank">打法排名</li>
+                                <li data-order="rank_changed">排名变动</li>
+                            </ul>
+                            <ul class="colomn4" id="subStat1" style="display: none;">
+                                <li data-order="kda_num">KDA综合<b class="arrow"></b></li>
+                                <li data-order="k_num">K<b class="arrow"></b></li>
+                                <li data-order="d_num">D<b class="arrow"></b></li>
+                                <li data-order="a_num">A<b class="arrow"></b></li>
+                            </ul>
+                            <ul class="colomn6" id="subStat2" style="display: none;">
+                                <li data-order="killing_spree">连杀</li>
+                                <li data-order="minions_killed">补兵</li>
+                                <li data-order="neutral_minions_killed">清野</li>
+                                <li data-order="gold_earned">经济</li>
+                                <li class="wide" data-order="damage_dealt">输出伤害</li>
+                                <li class="wide" data-order="damage_taken">承受伤害</li>
+                            </ul>
+                        </div>
+
+                        <!--<div class="title-tabs-cont" style="display: none;">-->
+
+                        <!--</div>-->
+
+                        <div class="table-body"><!-- 如果是四列的时候，则增加class名“table-colomn4” -->
+                            <ul class="table" id="tableContent">
+                            </ul>
+                        </div>
+
+
+                    </div>
+                    <!-- table-area2 end -->
+
+                </div>
+            </div>
+        </div>
+        <!-- ui-tabs-cont end -->
+    </div>
+    <!-- entire-rank-content end -->
+</div>
+<script type="text/x-template" id="tpl_graph">
+    <!-- 数据的子类型，由js动态生成 -->
+    <%
+    for(var i in dataList){
+    var ti = dataList[i];
+    %>
+    <li>
+        <div class="table-cell1"><a href="#" data-pos="<%=i%>" hidefocus><%=PLS.heroData.graph.traitMap[i]%></a></div>
+        <div class="table-cell2">
+            <a class="hero-img2 icon2-<%=ti.win_ratio.champion_id%>" href="#"
+               data-hid="<%=ti.win_ratio.champion_id%>" hidefocus></a>
+
+            <div class="detail">
+                <h3><a data-hid="<%=ti.win_ratio.champion_id%>" href="#" hidefocus><%=ti.win_ratio.title%></a></h3>
+
+                <p><%=ti.win_ratio.ratio%>%<% if(ti.win_ratio.continue_days != 0) { %><span class="small">(<%=ti.win_ratio.continue_days+1%>天)</span>
+                    <% } %>
+                </p>
+                <% if(ti.win_ratio.is_reform || ti.win_ratio.is_new) { %>
+                <div class="status-area">
+                    <i class="status-icon <%= ti.win_ratio.is_new? " icon-new" : ""%>"></i>
+                    <div class="debut-tips" style="display: none;">
+                        <p><%= ti.win_ratio.is_new? "新英雄" : "重做英雄"%></p>
+                    </div>
+                </div>
+                <%}%>
+            </div>
+        </div>
+        <div class="table-cell3">
+            <a data-hid="<%=ti.use_ratio.champion_id%>" class="hero-img2 icon2-<%=ti.use_ratio.champion_id%>" href="#"
+               hidefocus></a>
+
+            <div class="detail">
+                <h3><a href="#" data-hid="<%=ti.use_ratio.champion_id%>"
+                       hidefocus><%=ti.use_ratio.title%></a></h3>
+
+                <p><%=ti.use_ratio.ratio%>%</p>
+                <% if(ti.use_ratio.is_reform || ti.use_ratio.is_new) { %>
+                <div class="status-area">
+                    <i class="status-icon <%= ti.use_ratio.is_new? " icon-new" : ""%>"></i>
+                    <div class="debut-tips" style="display: none;">
+                        <p><%= ti.use_ratio.is_new? "新英雄" : "重做英雄"%></p>
+                    </div>
+                </div>
+                <%}%>
+            </div>
+        </div>
+        <div class="table-cell4">
+            <% if(type == "compreRank") { %>
+            <a data-hid="<%=ti.improve.champion_id%>" class="hero-img2 icon2-<%=ti.improve.champion_id%>" href="#"
+               hidefocus></a>
+
+            <div class="detail">
+                <h3><a data-hid="<%=ti.improve.champion_id%>" href="#" hidefocus><% if(ti.improve) { %>
+                    <%=ti.improve.title%></a></h3>
+                <% if(ti.improve.improve > 0) { %>
+                <p class="up"><i class="up-icon"></i><%=ti.improve.improve%></p>
+                <% } else { %>
+                <p class="up"><i class="down-icon"></i><%=ti.improve.improve%></p>
+                <% }} else { %>
+                <%=ti.ban.title%></a></h3>
+                <p class="up"><i class="up-icon"></i><%=ti.ban.ratio%>%</p>
+                <% }%>
+                <% if(ti.improve.is_reform || ti.improve.is_new) { %>
+                <div class="status-area">
+                    <i class="status-icon <%= ti.improve.is_new? " icon-new" : ""%>"></i>
+                    <div class="debut-tips" style="display: none;">
+                        <p><%= ti.improve.is_new? "新英雄" : "重做英雄"%></p>
+                    </div>
+                </div>
+                <%}%>
+            </div>
+            <%} else {%>
+            <a data-hid="<%=ti.ban.champion_id%>" class="hero-img2 icon2-<%=ti.ban.champion_id%>" href="#"
+               hidefocus></a>
+
+            <div class="detail">
+                <h3><a data-hid="<%=ti.ban.champion_id%>" href="#" hidefocus><% if(ti.ban) { %>
+                    <%=ti.ban.title%></a></h3>
+
+                <p class="up"><%=ti.ban.ratio%>%</p>
+                <% }%>
+                <% if(ti.ban.is_reform || ti.ban.is_new) { %>
+                <div class="status-area">
+                    <i class="status-icon <%= ti.ban.is_new? " icon-new" : ""%>"></i>
+                    <div class="debut-tips" style="display: none;">
+                        <p><%= ti.ban.is_new? "新英雄" : "重做英雄"%></p>
+                    </div>
+                </div>
+                <%}%>
+            </div>
+            <%}%>
+        </div>
+    </li>
+    <% } %>
+</script>
+<script type="text/x-template" id="tpl_table">
+    <!-- 数据的子类型，由js动态生成 -->
+    <%
+    for(var i=0,l=dataList.length; i
+    <l; i++){
+    var ci = dataList[i];
+    if(i%2) {
+    %>
+    <li class="even">
+        <% } else { %>
+    <li>
+        <% } if(tab==0) {%>
+        <div class="table-cell4" data-type="win_ratio"><%=ci.win_ratio%>%</div>
+        <div class="table-cell5" data-type="use_ratio"><%=ci.use_ratio%>%</div>
+        <div class="table-cell6" data-type="ban_ratio"><%=ci.ban_ratio%>%</div>
+        <div class="table-cell7" data-type="play_rank"><%=ci.play_rank%></div>
+        <div class="table-cell8" data-type="rank_changed">
+            <% if(ci.rank_changed > 0) {%>
+            <i class="up-icon"></i><%=ci.rank_changed%>
+            <%} else if(ci.rank_changed < 0) {%>
+            <i class="down-icon"></i><%=-ci.rank_changed%>
+            <% } %>
+        </div>
+        <% } else if(tab==1) {%>
+        <div class="table-cell4" data-type="kda_num"><%=ci.kda_num%></div>
+        <div class="table-cell5" data-type="k_num"><%=ci.k_num%></div>
+        <div class="table-cell6" data-type="d_num"><%=ci.d_num%></div>
+        <div class="table-cell8" data-type="a_num"><%=ci.a_num%></div>
+        <% } else if(tab==2) {%>
+        <div class="table-cell4" data-type="killing_spree"><%=ci.killing_spree%></div>
+        <div class="table-cell5" data-type="minions_killed"><%=ci.minions_killed%></div>
+        <div class="table-cell6" data-type="neutral_minions_killed"><%=ci.neutral_minions_killed%></div>
+        <div class="table-cell7" data-type="gold_earned"><%=ci.gold_earned%></div>
+        <div class="table-cell8" data-type="damage_dealt"><%=ci.damage_dealt%></div>
+        <div class="table-cell9" data-type="damage_taken"><%=ci.damage_taken%></div>
+        <%} } %>
+</script>
+<script type="text/x-template" id="tpl_hero">
+    <!-- 数据的子类型，由js动态生成 -->
+    <%
+    for(var i=0,l=dataList.length; i
+    <l; i++){
+    var ci = dataList[i];
+    if(i%2) {
+    %>
+    <li class="even">
+        <% } else { %>
+    <li>
+        <% } %>
+        <div class="table-cell1"><%=direction ? dataList.length-i : i+1%></div>
+        <div class="table-cell2">
+            <b data-hid="<%=ci.id%>" class="hero-img icon-<%=ci.id%>"></b>
+
+            <div class="detail">
+                <p><a data-hid="<%=ci.id%>" href="#" hidefocus><%=ci.title%></a></p>
+            </div>
+        </div>
+        <div class="table-cell3"><%=PLS.heroData.graph.traitMap[ci.position]%></div>
+    </li>
+    <% } %>
+</script>
+</body>
+</html>
+
+<script>speedTimePoint.push(new Date());//2 html加载</script>
+<script type="text/javascript" src="http://cdn.tgp.qq.com/lib/jq/jquery-1.7.2.min.js?t=20160513160230"></script>
+<script src="http://cdn.tgp.qq.com/pallas/conf/LOLChampion.js?t=20160715190250"></script>
+<script src="http://cdn.tgp.qq.com/pallas/conf/LOLNewChamp.js?t=20160714113357"></script>
+<script src="http://cdn.tgp.qq.com/pallas/conf/LOLChampSearch.js?t=20160715152638"></script>
+<script src="http://cdn.tgp.qq.com/pallas/js/rank/pls.heroData.20140428.js?20140708&t=20160513160231"></script>
+<script>
+    speedTimePoint.push(new Date());//3 js加载
+    PLS.heroData.init();
+    //测速完成上报
+    $sendSpeedRpt()
+    //点击流上报
+    $TCSS.visited({statIframe: true});
+</script>

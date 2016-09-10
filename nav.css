@@ -1,0 +1,523 @@
+@charset "utf-8";
+/*** reset ****/
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td, hr, button, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	margin: 0;
+	padding: 0;
+	cursor: default;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+table {
+	border-collapse: collapse;
+}
+audio, canvas, video {
+	display: inline-block;
+*display: inline;
+*zoom: 1;
+}
+fieldset, img {
+	border: 0
+}
+address, caption, cite, code, dfn, em, strong, th, var {
+	font-style: normal;
+	font-weight: normal
+}
+ol, ul {
+	list-style: none
+}
+q:before, q:after {
+	content: ''
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	font-size: 100%;
+}
+abbr, acronym {
+	border: 0;
+	font-variant: normal
+}
+sup {
+	vertical-align: text-top
+}
+sub {
+	vertical-align: text-bottom
+}
+input, textarea, select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit
+}
+input, textarea, select {
+	*font-size:100%
+}
+a {
+	text-decoration: none;
+	cursor: pointer;
+	outline: none;
+}
+:focus {
+	outline: none;
+}
+.clear {
+	clear: both;
+	height: 0;
+	font-size: 0;
+	line-height: 0;
+	overflow: hidden;
+}
+.clearfix:after {
+	content: "";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+.clearfix {
+	zoom: 1;
+}
+.fl{
+	float:left;
+}
+.fr{
+	float:right;
+}
+html, body {
+	overflow: hidden;
+}
+body {
+	font: 12px/14px tahoma, '\5b8b\4f53', sans-serif;
+	color: #597688;
+	background-color:#09090a;
+}
+.lol-logo, .pallas-sidebar .arrow-icon, .client-main-nav .nav-icon, .pallas-sidebar .hot-icon, .pallas-sidebar .new-icon, .game-set .checked-icon, .game-set .more-set, .open-black-btn a, .nav-tips-area .arrow{
+	background: url(client_sprites.png?t=20160307) no-repeat;
+}
+/*** pallas-sidebar ***/
+.pallas-sidebar {
+	width: 121px;
+	height: 638px;
+	float:left;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+	background:url(http://cdn.tgp.qq.com/pallas/images/nav/nav_bg2.jpg) no-repeat;
+	border-top:1px solid #070b0e;
+	border-right:1px solid #070b0e;
+	position:relative;
+}
+.pallas-sidebar-inside{
+	border-left:1px solid #2c3640;
+	border-top:1px solid #2c3641;
+	width: 120px;
+	height: 637px;
+	}
+.lol-logo{
+	width:102px;
+	height:57px;
+	line-height:9999em;
+	overflow:hidden;
+	margin:11px 0 10px 9px;
+	}
+/*** debut-cont ***/
+.pallas-sidebar .debut-cont, .pallas-sidebar .debut-cont-gray{
+	width: 101px;
+	margin-left:8px;
+	position: relative;
+	z-index:2;
+}
+.pallas-sidebar .debut-cont .debut-current, .pallas-sidebar .debut-cont-gray .debut-current-gray{
+	height: 19px;
+	border: 1px solid #286d9d;
+	padding:0 25px 0 0;
+	color: #00aef0;
+	line-height:19px;
+	overflow:hidden;
+	cursor:pointer;
+	text-align:center;
+	background-color:#27405d;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+.pallas-sidebar .arrow-icon, .pallas-sidebar .debut-cont-gray .arrow-icon{
+	display: block;
+	width: 19px;
+	height: 17px;
+	position: absolute;
+	right:2px;
+	top: 2px;
+	background-color:#088bca;
+	background-position: -116px 5px;
+}
+.pallas-sidebar .drop-down {
+	width: 101px;
+	height:130px;
+	border: 1px solid #050608;
+	background-color: #202837;
+	overflow: hidden;
+	display: none;
+	position: absolute;
+	left: -1px;
+	top: 21px;
+}
+.pallas-sidebar .drop-down li {
+	margin: -1px 8px 0;
+	float: left;
+	width: 85px;
+	display: inline;
+	border-top: 1px dotted #354656;
+	line-height: 25px;
+}
+.pallas-sidebar .drop-down a {
+	color: #00aef0;
+	display: block;
+}
+.pallas-sidebar .drop-down a:hover, .pallas-sidebar .drop-down .on {
+	color: #88b7d0;
+}
+.pallas-sidebar .debut-current:hover .arrow-icon {
+	background-position: -116px -18px;
+	background-color:#019ce3;
+}
+.pallas-sidebar .record-hover .arrow-icon{
+	background-position: -116px -41px;
+}
+.pallas-sidebar .record-hover .debut-current:hover .arrow-icon{
+	background-position: -116px -64px;
+	}
+.pallas-sidebar .record-hover .drop-down {
+	display: block;
+}
+.pallas-sidebar .drop-down-hover{
+	overflow-x:hidden;
+	overflow-y:auto;
+	scrollbar-arrow-color:#76aac4;
+	scrollbar-face-color:#083959;
+	scrollbar-darkshadow-color:#083959;
+	scrollbar-highlight-color:#083959;
+	scrollbar-3dlight-color:#0A4A74;
+	scrollbar-shadow-color:#083959;
+	scrollbar-track-color:#1a232d;
+	}
+.pallas-sidebar .debut-cont-gray{
+	border-color:#151515;
+	}
+.pallas-sidebar .debut-cont-gray .debut-current-gray{
+	background-color:transparent;
+	border-color:#5b5b5b;
+	color:#7e7e7e;
+	cursor:default;
+	}
+.pallas-sidebar .debut-cont-gray .arrow-icon{
+	background-position:-116px -87px;
+	background-color:#65686d;
+	}
+/*** client-user-img ***/
+.pallas-sidebar .client-user-img{
+	width:60px;
+	height:60px;
+	margin:7px auto 6px;
+	}
+.pallas-sidebar .client-user-img img, .pallas-sidebar .client-user-img a{
+	display:block;
+	width:56px;
+	height:56px;
+	}
+.pallas-sidebar .client-user-img a{
+	border:2px solid #030305;
+	position:relative;
+	}
+.pallas-sidebar .client-user-img a:hover{
+	border-color:#0771b7;
+	}
+.client-user-name{
+	text-align:center;
+	color:#fff;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	}
+.grade-num{
+	display:block;
+	width:19px;
+	height:18px;
+	font-weight:normal;
+	color:#e8d97e;
+	line-height:19px;
+	text-align:center;
+	text-indent:3px;
+	background:url(http://cdn.tgp.qq.com/pallas/images/nav/opacity_bg.png) no-repeat;
+	position:absolute;
+	right:0;
+	bottom:0;
+	}
+/*** client-main-nav ***/
+.client-main-nav{
+	margin:14px 0 0 -1px;
+	}
+.client-main-nav li, .client-main-nav a{
+	width:121px;
+	height:34px;
+	}
+.client-main-nav li{
+	position:relative;
+	margin-bottom:3px;
+	vertical-align:middle;
+	}
+.client-main-nav a{
+	display:block;
+	line-height:34px;
+	text-indent:48px;
+	color:#87adbb;
+	}
+.client-main-nav .nav-icon{
+	display:block;
+	width:13px;
+	height:13px;
+	background-position:0 -62px;
+	position:absolute;
+	left:25px;
+	top:10px;
+	}
+.client-main-nav a:hover{
+	color:#f1c30f;
+	}
+.client-main-nav a:hover .nav-icon{
+	background-position:0 -96px;
+	}
+.client-main-nav .on a{
+	background-color:#1a2435;
+	color:#f1c30f;
+	border-top:1px solid #19212d;
+	border-bottom:1px solid #2d3b4d;
+	height:32px;
+	line-height:32px;
+	}
+.client-main-nav .on .nav-icon, .client-main-nav .on a:hover .nav-icon{
+	background-position:0 -79px;
+	}
+.client-main-nav .record .nav-icon{
+	background-position:-14px -62px;
+	height:15px;
+	top:9px;
+	}
+.client-main-nav .record:hover .nav-icon{
+	background-position:-14px -96px;
+	}
+.client-main-nav .on .record .nav-icon, .client-main-nav .on .record:hover .nav-icon{
+	background-position:-14px -79px;
+	}
+.client-main-nav .inquiry .nav-icon{
+	background-position:-28px -62px;
+	height:12px;
+	}
+.client-main-nav .inquiry:hover .nav-icon{
+	background-position:-28px -96px;
+	}
+.client-main-nav .on .inquiry .nav-icon, .client-main-nav .on .inquiry:hover .nav-icon{
+	background-position:-28px -79px;
+	}
+.client-main-nav .kings .nav-icon{
+	background-position:-42px -62px;
+	height:14px;
+	width:14px;
+	left:24px;
+	}
+.client-main-nav .kings:hover .nav-icon{
+	background-position:-42px -96px;
+	}
+.client-main-nav .on .kings .nav-icon, .client-main-nav .on .kings:hover .nav-icon{
+	background-position:-42px -79px;
+	}
+.client-main-nav .ranking .nav-icon{
+	background-position:-58px -62px;
+	left:24px;
+	width:15px;
+	height:12px;
+	}
+.client-main-nav .ranking:hover .nav-icon{
+	background-position:-58px -96px;
+	}
+.client-main-nav .on .ranking .nav-icon, .client-main-nav .on .ranking:hover .nav-icon{
+	background-position:-58px -79px;
+	}
+.client-main-nav .hero .nav-icon{
+	background-position:-75px -62px;
+	width:15px;
+	top:9px;
+	}
+.client-main-nav .hero:hover .nav-icon{
+	background-position:-75px -96px;
+	}
+.client-main-nav .on .hero .nav-icon, .client-main-nav .on .hero:hover .nav-icon{
+	background-position:-75px -79px;
+	}
+.client-main-nav .netbar .nav-icon{
+	background-position:0 -133px;
+	width:14px;
+	height:14px;
+	}
+.client-main-nav .netbar:hover .nav-icon{
+	background-position:-30px -133px;
+	}
+.client-main-nav .on .netbar .nav-icon, .client-main-nav .on .netbar:hover .nav-icon{
+	background-position:-15px -133px;
+	}
+.client-main-nav .video .nav-icon{
+	background-position:-69px -119px;
+	width:16px;
+	height:16px;
+	left: 23px;
+}
+.client-main-nav .video:hover .nav-icon{
+	background-position:-88px -119px;
+}
+.client-main-nav .on .video .nav-icon, .client-main-nav .on .video:hover .nav-icon{
+	background-position:-107px -119px;
+}
+.client-main-nav .community .nav-icon{
+	background-position:-100px -147px;
+	width:16px;
+	height:17px;
+}
+.client-main-nav .community:hover .nav-icon{
+	background-position:-111px -166px;
+}
+.client-main-nav .on .community .nav-icon, .client-main-nav .on .community:hover .nav-icon{
+	background-position:-92px -166px;
+}
+.pallas-sidebar .hot-icon, .pallas-sidebar .new-icon{
+	display:block;
+	position:absolute;
+	top:7px;
+	overflow:hidden;
+	}
+.pallas-sidebar .hot-icon{
+	width:17px;
+	height:6px;
+	background-position:-92px -99px;
+	left:100px;
+	}
+.pallas-sidebar .new-icon{
+	width:16px;
+	height:5px;
+	background-position:-92px -110px;
+	left:99px;
+	}
+/*** game-set ***/
+.game-set{
+	position:absolute;
+	left:0;
+	bottom:14px;
+	width:120px;
+	z-index:1;
+	}
+.game-set li{
+	height:24px;
+	line-height:24px;
+	padding-left:50px;
+	position:relative;
+	vertical-align:top;
+	}
+.game-set li a{
+	color:#7dadd0;
+	display:inline-block;
+	*display:inline;
+	zoom:1;
+	}
+.game-set .checked-icon{
+	display:block;
+	width:14px;
+	height:14px;
+	background-position:0 -114px;
+	position:absolute;
+	left:25px;
+	top:6px;
+	*top:4px;
+	}
+.game-set .no-check .checked-icon{
+	background-position:-17px -114px;
+	}
+.game-set .gray a, .game-set .checked-gray a{
+	color:#7e7e7e;
+	cursor:default;
+	}
+.game-set .gray .checked-icon{
+	background-position:-51px -114px;
+	}
+.game-set .checked-gray .checked-icon{
+	background-position:-34px -114px;
+	}
+	
+.game-set .more-set{
+	display:block;
+	width:88px;
+	height:26px;
+	background-position:0 -150px;
+	line-height:9999em;
+	overflow:hidden;
+	margin:10px auto 0;
+	}
+.game-set .more-set:hover{
+	background-position:0 -177px;
+	}
+/*** open-black-btn ***/
+.open-black-btn{
+	margin:0 auto;
+	padding-top:3px;
+	width:97px;
+	position:relative;
+	z-index:2;
+	}
+.open-black-btn a{
+	display:block;
+	width:97px;
+	height:34px;
+	line-height:9999em;
+	overflow:hidden;
+	background-position:0 -204px;
+	}
+.open-black-btn a:hover{
+	background-position:0 -239px;
+	}
+.open-black-btn-gray a, .open-black-btn-gray a:hover{
+	cursor:default;
+	background-position:0 -274px;
+	}
+.nav-tips-area{
+	display:none;
+	width:114px;
+	position:absolute;
+	left:-10px;
+	top:33px;
+	border:1px solid #00a0e9;
+	background-color:#0d1319;
+	line-height:18px;
+	color:#88bbe1;
+	}
+.nav-tips-area .arrow{
+	width:11px;
+	height:5px;
+	background-position:-49px -134px;
+	position:absolute;
+	left:54px;
+	top:-5px;
+	}
+.nav-tips-area p{
+	padding:4px 5px 7px 8px;
+	*padding-top:5px;
+	_padding-top:4px;
+	}
+/*活动新增入口*/
+.act-enter,.act-enter a.close{background: url("../../images/popup/s5/act-enter.png");}
+.act-enter{
+	width:105px;
+	height:110px; 
+	display: block; 
+	position: absolute;
+	bottom:10px;
+	left:10px;
+	background-position: -2px -2px;
+	z-index: 3;
+}
+.act-enter a.close{width:20px;height:20px;display: block; background-position:-90px -9px; position: absolute;right:-2px;top:7px; }
+.act-enter a.close:hover{ background-position:-115px -9px;}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="teach">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/chat.css"/>
+    <script src="http://chat.iboom.tv/socket.js" sync></script>
+    <script src="http://chat.iboom.tv/stomp.js" sync></script>
+    <script src="http://chat.iboom.tv/jquery.js" sync></script>
+    <script src="http://chat.iboom.tv/angular.js" sync></script>
+    <script src="http://chat.iboom.tv/SpeakerJs.js" sync></script>
+    <script src="boomUtil.js"></script>
+</head>
+<body>
+<div class="chatLeft" ng-controller="show">
+    <div class="chat01">
+        <div class="chat01_title">
+            <ul class="talkTo">
+                <li><a href="javascript:void(0)"><span id="info">正在连接服务器。。。。</span></a></li>
+            </ul>
+        </div>
+        <div class="chat01_content" id="contentBox">
+
+            <div class="message_box mes3" style="display: block;" id="inner">
+                <div class="message clearfix" ng-repeat="chat in chats">
+                    <div class="user-logo"><img src="http://static.iboom.tv/static/img/{{chat.speaker.headImg}}"
+                                                style="width: 60px;height: 60px; border-radius:50%; overflow:hidden;">
+                    </div>
+                    <div class="wrap-text"><h5 class="clearfix">
+                        &nbsp;{{chat.speaker.num}}:{{chat.speaker.name}}&nbsp;说：</h5>
+
+                        <div>&nbsp;&nbsp;&nbsp;{{chat.content}}</div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chat02">
+        <div class="chat02_title">
+            <label class="chat02_title_t">
+                <a href="chat.htm" target="_blank"></a></label>
+
+            <div class="wl_faces_box">
+                <div class="wl_faces_content">
+                    <div class="title">
+                        <ul>
+                            <li class="wl_faces_close"><span>&nbsp;</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="wlf_icon">
+                </div>
+            </div>
+        </div>
+        <div class="chat02_content">
+            <textarea id="textarea" ng-model="data" ng-keyup="myKeyup($event)"></textarea>
+        </div>
+        <div class="chat02_bar">
+            <ul>
+                <li style="right: 5px; top: 5px;"><a href="javascript:;" ng-click="say()">
+                    <img src="img/send_btn.jpg"></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+
+    var myAppModule = angular.module('teach', [])
+
+    myAppModule.provider("webSocketService", function () {
+        this.stompClient = null;
+        this.setStompEndPoint = function (endPoint) {
+            this.endPoint = endPoint;
+        }
+
+
+        this.$get = function () {
+            var self = this;
+            var receive = new Date().getTime();
+            var service = {
+                listen: function (url, handler, scope) {
+
+                    if (!self.stompClient) {
+                        var socket = new SockJS("http://chat.iboom.tv/" + self.endPoint);
+                        self.stompClient = Stomp.over(socket);
+                    }
+
+                    self.stompClient.connect({}, function (frame) {
+                        $("#info").text("连接服务器成功！")
+                        self.subUrl = url;
+                        self.stompClient.subscribe(url, function (greeting) {
+                            receive = new Date().getTime();
+                            if (scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
+                                scope.$apply(function () {
+                                    console.log(greeting.body)
+                                    handler ? handler(JSON.parse(greeting.body), scope) : null;
+                                });
+                            }
+                        });
+                    });
+                    return this;
+                },
+                reSubscribe: function (url) {
+                    self.stompClient.subscribe(self.subUrl, function (greeting) {
+                        if (scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
+                            scope.$apply(function () {
+                                console.log(greeting.body)
+                                handler ? handler(JSON.parse(greeting.body), scope) : null;
+                            });
+                        }
+                    });
+                },
+                say: function (url, data, handler, scope) {
+                    self.stompClient.send(url, {}, JSON.stringify(data));
+                    if (scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest') {
+                        scope.$apply(function () {
+                            handler ? handler(data, scope) : null;
+                        });
+                    }
+                }
+
+            };
+            return service;
+        }
+    })
+
+    myAppModule.config(function (webSocketServiceProvider) {
+        webSocketServiceProvider.setStompEndPoint("hello")
+    })
+
+    myAppModule.controller("show", ["webSocketService", "$http", "$scope", function (webSocketService, $http, $scope) {
+
+        $scope.chats = [];
+        var speaker = {};
+        var group = "default"
+
+        var contentBox = $("#contentBox");
+
+        $scope.connect = function () {
+            $http.jsonp("http://school.iboom.tv/school/auth/userStatue.do?callback=JSON_CALLBACK").success(function (data) {
+                var auth = data.auth;
+
+                speaker = boomWebSocket.createSpeaker(auth.summoner, auth.studentNum, auth.headImage ? auth.headImage : "defaultIco.png");
+                group = auth.areaCode ? auth.areaCode : "default";
+                webSocketService.listen("/topic/greetings/" + group, function (data, $scope) {
+                    $scope.chats.push(data);
+                    var move = $("#inner").height()
+                    contentBox.scrollTop(move)
+                }, $scope)
+                clearInterval(contectClock)
+            }).error(function () {
+            })
+        }
+
+        var contectClock = setInterval($scope.connect, 3000);
+
+        $scope.myKeyup = function (e) {
+            var keycode = window.event ? e.keyCode : e.which;
+            console.log("-------")
+            if (keycode == 13) {
+                $scope.say();
+            }
+        };
+
+        $scope.say = function () {
+            var data = boomWebSocket.createGroupMessage($scope.data, group, speaker)
+            webSocketService.say("/app/hello", data, null, $scope);
+            $scope.data = "";
+        }
+    }])
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="author" content="tencent-tgideas">
+    <title>官方助手主导航</title>
+    <link rel="stylesheet" href="nav.css?t=20160405112829"/>
+
+    <meta name="viewport"
+          content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="apple-touch-icon-precomposed" href="http://school.iboom.tv/school/images/public/favicon/favicon.png"
+          sizes="60x60">
+
+    <link rel="shortcut icon" href="http://school.iboom.tv/school/images/public/favicon/favicon.ico"/>
+    <!-- <link rel="stylesheet" href="css/public/bootstrap.min.css" type="text/css"> -->
+    <!-- load -->
+    <link rel="stylesheet" href="http://school.iboom.tv/school/css/lib/login-styles.css"/>
+    <link rel="stylesheet" href="http://school.iboom.tv/school/css/lib/login.css"/>
+    <link rel="stylesheet" href="skin/layer.css"/>
+
+    <!--[if lte ie 8]>
+    <link rel="stylesheet" href="http://cdn.tgp.qq.com/pallas/css/common/filter.css?t=20160524181229"/>
+    <![endif]-->
+
+    <!--[if lt ie 9]>
+    <script src="http://school.iboom.tv/school/js/public/ie/html5shiv.js"></script>
+    <script src="http://school.iboom.tv/school/js/public/ie/respond.min.js"></script>
+    <script src="http://school.iboom.tv/school/js/public/ie/excanvas.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="http://cdn.tgp.qq.com/lib/jq/jquery-1.7.2.min.js?t=20160513160230"
+            sync></script>
+    <script src="http://cdn.tgp.qq.com/pallas/conf/lolgamearea.js?t=20160513160230"></script>
+    <script src="http://cdn.tgp.qq.com/pallas/js/nav/pls.nav.20150825.js?t=20160616195633"></script>
+    <script id="myscript"></script>
+    <script id="userstatue"></script>
+    <script id="search"></script>
+    <script>
+    </script>
+    <script src="layer.js"></script>
+    <script src="logging.js"></script>
+</head>
+
+<body>
+<!-- pallas-sidebar -->
+<div class="pallas-sidebar" style="width:120px;height:637px">
+    <div class="pallas-sidebar-inside">
+        <h1 class="lol-logo">logo</h1>
+
+        <div class="client-user-img">
+            <a href="http://school.iboom.tv" hidefocus target="Iframe1"><img id="playerIcon"
+                                                                             src="http://school.iboom.tv/school/images/public/default/defaultIco.png"
+                                                                             width="56" height="56" alt=""/><b
+                    id="playerLv" class="grade-num">0</b></a>
+        </div>
+        <p id="playerName" class="client-user-name">未绑定</p>
+
+        <ul id="navList" class="client-main-nav">
+            <li data-navid="1" onclick="sendEvent('盒子学院')">
+                <a class="" href="http://school.iboom.tv/school/class-notice.html" target="Iframe1" hidefocus="">
+                    <b class="nav-icon"></b>布姆学院
+                </a>
+            </li>
+            <li data-navid="1" id="myDetail" style="display: none" onclick="sendEvent('盒子我的战绩')">
+                <a class="record" href="" target="Iframe1" hidefocus="">
+                    <b class="nav-icon"></b>我的战绩
+                </a>
+            </li>
+            <li data-navid="1" id="searc" style="display:none" onclick="sendEvent('盒子战绩查询')">
+                <a class="inquiry" href="search.html" target="Iframe1" hidefocus="">
+                    <b class="nav-icon"></b>战绩查询
+                </a>
+            </li>
+            <li data-navid="6" id="rank" style="display:none" onclick="sendEvent('盒子国服排行榜')">
+                <a class="ranking" href="heroData.html" hidefocus="" target="Iframe1">
+                    <b class="nav-icon">
+                    </b>国服排行
+                </a>
+            </li>
+            <li data-navid="1" style="display:none" id="chat" onclick="sendEvent('盒子同区聊天')">
+                <a class="inquiry" href="chat.html" target="Iframe1" hidefocus="">
+                    <b class="nav-icon"></b>同区聊天
+                </a>
+            </li>
+            <li data-navid="1" id="games" onclick="sendEvent('盒子游戏')">
+                <a class="inquiry" href="lianzhao.html" target="Iframe1" hidefocus="">
+                    <b class="nav-icon"></b>游戏大厅
+                </a>
+            </li>
+
+            <!--<li data-navid="1" id="question">-->
+            <!--<a class="inquiry" href="question.html" target="Iframe1" hidefocus="">-->
+            <!--<b class="nav-icon"></b>常见问题-->
+            <!--</a>-->
+            <!--</li>-->
+        </ul>
+    </div>
+
+</div>
+<div class="wrapper" style="width: 620px;height: 637px;float: left;margin-left:118px;" id="loginWindow">
+    <div class="container">
+        <h1><img src="http://school.iboom.tv/school/images/l1.png" class="img-responsive center-block" alt="">
+        </h1>
+
+        <form class="form">
+            <input type="text" maxlength="20" placeholder="账号" id="account">
+            <input type="password" maxlength="20" placeholder="密码" id="password">
+
+            <p class="verror"></p>
+            <button type="button" id="login-button" onclick="login()">登录</button>
+            <div class="forgot-grid">
+                <!-- <label><input type="checkbox" name="checkbox"><i></i>记住我</label>
+                <a href="tencent://message/?uin=3250344107&amp;Menu=yes">联系客服</a> -->
+                <a href="" class="willjoin toqq">
+                    <span>我要报名</span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="wrapper" style="width: 620px;height: 637px;float: left;margin-left:118px; display:none" id="sorry">
+    <div class="container">
+        <h1><img src="http://school.iboom.tv/school/images/l1.png" class="img-responsive center-block" alt="">
+        </h1>
+        <br/>
+        <br/>
+
+        <h1>Sorry</h1>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <span style="font-size:17px">非常抱歉，布姆学院盒子不支持IE9以下版本浏览器</span>
+        <br/>
+        <br/>
+        <br/>
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+            href="https://www.microsoft.com/zh-cn/download/internet-explorer-9-details.aspx"
+            target="_blank">点击前往升级IE9</a>
+    </div>
+</div>
+
+<iframe frameborder="0" name="Iframe1" src="" width="620" height="640" id="window1"
+        style="background-color:#ECECF3;display: none">
+    您的浏览器不支持嵌入式框架，或者当前配置为不显示嵌入式框架。
+</iframe>
+
+
+<script>
+
+
+    window.PLS = {};
+    window.PLS.status = {UIN: 'U13277179147149664847', aid: '1'}
+    window.PLS.web = {
+        "jumpNavPage": function (data) {
+            window.frames[0].location.href = data.url ? "detail.html?" + data.url.split("?")[1] : "search.html";
+        }
+    }
+
+
+    var bJ = {
+        jsonp: function (url, success, fail) {
+            $.ajax({
+                async: false,
+                url: url,
+                type: "GET",
+                dataType: 'jsonp',
+                jsonp: 'callback',
+                timeout: 5000,
+                success: function (json) { //客户端jquery预先定义好的callback函数,成功获取跨域服务器上的json数据后,会动态执行这个callback函数
+                    success && success(json);
+                },
+                error: function (xhr) {
+                    fail && fail(xhr);
+                }
+            })
+        }
+    }
+
+
+    var tGP = {
+        search: function (name) {
+            var url = "http://api.pallas.tgp.qq.com/core/search_player?key=" + name + "&_=" + new Date().getTime();
+            bJ.jsonp(url, function (data) {
+                if (data.retCode != 2002) {
+                    $("#searc").show();
+                    $("#rank").show();
+                    var tgpChecker = setInterval(function () {
+                        bJ.jsonp(url, function (data) {
+                            if (data.retCode == 2002) {
+                                BOOMLogging.Action({
+                                    studentNum: studentNum,
+                                    classId: "",
+                                    actionName: "盒子key异常",
+                                    project: 'box'
+                                })
+                                clearInterval(tgpChecker);
+                            }
+                        }, function () {
+                        })
+                    }, 1000 * 60)
+                }
+                var players = data.data;
+
+                var self = null;
+                $.each(players, function (index) {
+                    //循环用户
+                    var player = players[index];
+                    if (player && (player.area_id == area)) {
+                        self = player;
+                        var href = "detail.html?vuin=" + self.qquin + "&vaid=" + self.area_id + "&kw=" + self.name;
+                        $("#myDetail a").attr("href", href);
+                        $("#myDetail").show()
+                    }
+                })
+                if (!self) {
+                    return;
+                }
+            }, function () {
+                console.log("获取tgp数据异常！");
+            })
+        }
+    }
+
+    function sendEvent(action) {
+        BOOMLogging.Action({studentNum: studentNum, classId: "", actionName: action, project: 'box'})
+    }
+
+    var myDetail = {
+        check: function () {
+            var url = "http://school.iboom.tv/school/auth/userStatue.do?_=" + new Date().getTime();
+            bJ.jsonp(url, function (data) {
+                if (data && data.logined) {
+                    //设置我的战绩
+                    var summoner = data.auth.summoner;
+                    area = data.auth.areaCode;
+                    studentNum = data.auth.studentNum;
+                    BOOMLogging.Action({studentNum: studentNum, classId: "", actionName: "使用盒子", project: 'box'})
+                    var header = data.auth.headImage ? "http://static.iboom.tv/static/img/" + data.auth.headImage : "http://school.iboom.tv/school/images/public/default/defaultIco.png";
+                    //设置名字显示
+                    $("#playerName").text(summoner || "暂未绑定召唤师")
+                    $("#playerIcon").attr("src", header)
+                    $("#window1").attr("src", "http://school.iboom.tv/school/class-notice.html").show();
+
+                    //$("#window1").attr("src", "http://test.iboom.tv/school/school.html#/classNotice").show();
+                    $("#loginWindow").hide();
+                    $("#chat").show()
+//                    $("#chat").show()
+                    tGP.search(summoner)
+                }
+            }, function () {
+                alert.log("获取登录状态失败！")
+            })
+        }
+    }
+
+    function login() {
+        var account = $("#account").val();
+        var password = $("#password").val();
+
+        setDefaultCookie(account, password);
+
+        if (account && password) {
+            var url = "http://school.iboom.tv/school/auth/login.do?qq=" + account + "&password=" + password + "&_=" + new Date().getTime();
+            bJ.jsonp(url, function (data) {
+                if (data.error) {
+                    alert(data.msg);
+                    return;
+                }
+                myDetail.check();
+            }, function () {
+                alert("登录失败！")
+            })
+        }
+        else
+            alert("请填写用户名密码！");
+    }
+
+
+    function toLogin() {
+        $("#loginWindow").show();
+        $("#sorry").hide();
+    }
+
+    function checkVersion() {
+        var version = null;
+
+        if (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.split(";")[1].replace(/[ ]/g, "") == "MSIE6.0") {
+            version = "6";
+        }
+        else if (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.split(";")[1].replace(/[ ]/g, "") == "MSIE7.0") {
+            version = "7";
+        }
+        else if (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.split(";")[1].replace(/[ ]/g, "") == "MSIE8.0") {
+            version = "8";
+        }
+        else if (navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.split(";")[1].replace(/[ ]/g, "") == "MSIE9.0") {
+            version = "9";
+        }
+        if (version == "6" || version == "7" || version == "8") {
+            $("#loginWindow").hide();
+            $("#sorry").show();
+        }
+    }
+
+
+    function setCookie(name, value) {
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+        document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+    }
+
+    function getCookie(name) {
+        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+        if (arr = document.cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
+
+
+    function setDefaultCookie(account, password) {
+        setCookie("account", account)
+        setCookie("password", password)
+    }
+
+    function setDefaultValue() {
+        var account = getCookie("account");
+        var password = getCookie("password");
+        $("#account").val(account);
+        $("#password").val(password);
+    }
+    setDefaultValue();
+    //    checkVersion();
+</script>
+
+</body>
+</html>
