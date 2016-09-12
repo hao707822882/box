@@ -5,19 +5,18 @@
     <title>连招小游戏</title>
     <script src="js/html5shiv.js"></script>
     <link rel="stylesheet" href="css/lianzhao.css">
-
+    <script type="text/javascript" src="http://cdn.tgp.qq.com/lib/jq/jquery-1.7.2.min.js?t=20160513160230"
+            sync></script>
+    <script src="boomUtil.js"></script>
 </head>
 <body>
 <div class="all">
     <div class="content">
         <div>
-            <video controls="controls" width="600" height="300" preload>
-                <source src="audio/111zhu.mp4">
-
+            <video controls="controls" width="600" height="300" preload id="video">
                 <object data="" width="320" height="240">
                     <embed width="600" height="300" src=""/>
                 </object>
-
                 您的浏览器不支持播放视频，请更换高版本浏览器
             </video>
         </div>
@@ -25,7 +24,7 @@
             <p class="game-title">锐雯进阶连招&nbsp&nbspER闪秒人</p>
 
             <div class="">
-                <iframe frameborder="0" name="Iframe2" src="http://game.iboom.tv/index.html?7" width="620"
+                <iframe frameborder="0" name="Iframe2" src="" width="620" id="game"
                         height="250" style="background-color:#ECECF3;">
                     您的浏览器不支持嵌入式框架，或者当前配置为不显示嵌入式框架。
                 </iframe>
@@ -74,5 +73,20 @@
         </div>
     </div>
 </div>
+<script>
+    var gameId = window.location.href.split("?")[1];
+    if (!gameId) {
+        alert("游戏ID为定义")
+        throw "游戏ID为定义,请检查游戏页面地址！";
+    }
+    BOOM.gameDetail(gameId, function (data) {
+        var d = data.data;
+        $(".game-title").text(d.name);
+        $("#game").attr("src", "http://game.iboom.tv/index.html?" + gameId);
+        $("#video").attr("src", "http://static.iboom.tv/static/img/" + d.video);
+    }, function () {
+        alert("获取游戏配置信息失败！")
+    })
+</script>
 </body>
 </html>

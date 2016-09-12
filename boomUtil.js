@@ -37,5 +37,8 @@ BOOM = {
     },
     saveRank: function (rankObj, success, fail) {
         bJ.jsonp("http://school.iboom.tv/school/boot/rank/saveRank?" + bJ.toURLStr(logObj), success, fail)
+    },
+    gameDetail: function (id, success, fail) {
+        bJ.jsonp("http://game.iboom.tv/getConfigDetail/" + id, success, fail);
     }
 }
